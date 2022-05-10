@@ -8,7 +8,9 @@ const urls = [
   "https://www.theguardian.com/business/2022/may/10/grant-shapps-law-seafarers-minimum-wage-queens-speech",
 ];
 
-async function captureScreenshot() {
+const thumbnailWidth = 400
+
+async function captureScreenshots() {
   // make sure output dirs exist
   if (!fs.existsSync("screenshots")) {
     fs.mkdirSync("screenshots");
@@ -46,8 +48,8 @@ async function captureScreenshot() {
 
       // resizing images locally
       sharp(`screenshots/${encodeURIComponent(url)}.webp`)
-        .resize({ width: 100 })
-        .toFile(`screenshots/thumbnails/${encodeURIComponent(url)}.webp`)
+        .resize({ width: thumbnailWidth })
+        .toFile(`screenshots/thumbnails/${encodeURIComponent(url)}-${thumbnailWidth}.webp`)
     }
   } catch (err) {
     console.log(`Error: ${err.message}`);

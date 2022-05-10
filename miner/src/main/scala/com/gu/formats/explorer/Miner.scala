@@ -6,11 +6,15 @@ import com.gu.contentapi.client.utils.CapiModelEnrichment._
 import com.gu.contentapi.client.utils.format.{Design, Display, Theme}
 import com.gu.contentapi.client.{ContentApiClient, GuardianContentClient}
 import com.madgag.scala.collection.decorators._
+import org.threeten.extra.Interval
 import play.api.libs.json._
 import play.api.libs.json.Reads._
 import play.api.libs.functional.syntax._
 
+import java.nio.file.{Files, Path, Paths}
 import java.time.Instant
+import java.time.temporal.ChronoUnit
+import java.time.temporal.ChronoUnit.MINUTES
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -38,9 +42,12 @@ object Format {
 }
 
 object Miner extends App {
+  val interval = Interval.of(Instant.parse("2022-05-09T00:00:00Z"), Instant.now().truncatedTo(MINUTES))
+
   val search: SearchQuery =
     SearchQuery()
-      .fromDate(Instant.parse("2022-05-09T00:00:00Z"))
+      .fromDate(interval.getStart)
+      .toDate(interval.getEnd)
       .showTags("all")
       .showFields("all")
       .showElements("all")
@@ -65,7 +72,9 @@ object Miner extends App {
     println(allContent.size)
     println(sorted.size)
     val allContentJson = Json.toJson(allContent)
-    println(Json.prettyPrint(allContentJson))
+    val path = Paths.get(s"/Users/roberto/format-data.${interval.toString.replace('/', '_')}.json");
+    Files.write(path, Json.prettyPrint(allContentJson).getBytes())
+    println(s"Wrote out to $path")
   }
 
   val sortedCounts = allContentSearch.map { _.groupBy(_.format).mapV(_.size).toSeq.sortBy(_._2) }

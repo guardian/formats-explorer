@@ -1,12 +1,13 @@
-import { ArticleFormat, ArticleDesign, ArticleDisplay, ArticleTheme, ArticlePillar, ArticleSpecial } from '@guardian/libs'
+import { ArticleFormat, ArticleDesign, ArticleDisplay, ArticleTheme, ArticlePillar, ArticleSpecial } from './Formats'
 import { ArticleData } from './App'
 import { useState } from 'react';
 
 
 const getTheme = (theme: ArticleTheme, prefix?: boolean) => {
-    if (theme.valueOf() >= 5) return prefix ? `${ArticleSpecial[theme]}Special` : ArticleSpecial[theme]
-    else return prefix ? `${ArticlePillar[theme]}Pillar` : ArticlePillar[theme]
-  }
+  if (theme.valueOf() === 5) return prefix ? `${ArticleSpecial[theme]}Theme` : ArticleSpecial[theme]
+  if (theme.valueOf() === 6) return ArticleSpecial[theme]
+  else return prefix ? `${ArticlePillar[theme]}Pillar` : ArticlePillar[theme]
+}
   
 const getDesign = (design: ArticleDesign) => {
 const value = ArticleDesign[design]
@@ -41,7 +42,7 @@ export const Search = ({ data }: { data: ArticleData[] }) => {
       <select id="design" name="design" onChange={designChange}>
         <option value="unset">Select</option>
         {
-          Object.entries(ArticleDesign).slice(23).map(([name, value]) => {
+          Object.entries(ArticleDesign).slice(22).map(([name, value]) => {
             return <option value={value}>{name}</option>
           })
         }
@@ -66,7 +67,7 @@ export const Search = ({ data }: { data: ArticleData[] }) => {
       <select id="display" name="display" onChange={displayChange}>
       <option value="unset">Select</option>
         {
-          Object.entries(ArticleDisplay).slice(4).map(([name, value]) => {
+          Object.entries(ArticleDisplay).slice(5).map(([name, value]) => {
             return <option value={value}>{name}</option>
           })
         }

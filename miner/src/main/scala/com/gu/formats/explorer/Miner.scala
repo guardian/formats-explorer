@@ -17,6 +17,7 @@ import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.MINUTES
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.Failure
 
 case class ContentFormatData(
   format: Format,
@@ -54,27 +55,34 @@ object Miner extends App {
       .showBlocks("all")
       .pageSize(200)
 
-  val contentApiClient: ContentApiClient = GuardianContentClient(sys.env("CONTENT_API_KEY"))
 
   private def extractContentFormatDataFrom(response: SearchResponse): Seq[ContentFormatData] = {
     print(".")
     for (content <- response.results.toSeq) yield ContentFormatData(formatFor(content), content.webUrl)
   }
 
+  println(s"Searching for $interval (${interval.toDuration.toString.stripPrefix("PT")})")
+
   val allContentSearch =
-    contentApiClient.paginateAccum[SearchQuery,SearchResponse,Seq[ContentFormatData]](search)(extractContentFormatDataFrom, _ ++ _)
+    ContentApi.client.paginateAccum[SearchQuery,SearchResponse,Seq[ContentFormatData]](search)(extractContentFormatDataFrom, _ ++ _)
+
+  allContentSearch.onComplete {
+    case Failure(exception) =>
+      println(exception) // print errors!
+      System.exit(-1)
+    case _ => ()
+  }
 
   for {
     allContent <- allContentSearch
   } {
     val sorted = allContent.groupBy(_.format).mapV(_.size).toSeq.sortBy(_._2)
     println(sorted.mkString("\n"))
-    println(allContent.size)
-    println(sorted.size)
+    println(s"Found: ${allContent.size} content, ${sorted.size} different Formats")
     val allContentJson = Json.toJson(allContent)
-    val path = Paths.get(s"/Users/olly_namey/format-data.${interval.toString.replace('/', '_')}.json");
+    val path = Paths.get(s"/tmp/format-data.${interval.toString.replace('/', '_')}.json");
     Files.write(path, Json.prettyPrint(allContentJson).getBytes())
-    println(s"Wrote out to $path")
+    println(s"\nWrote out to $path")
   }
 
   val sortedCounts = allContentSearch.map { _.groupBy(_.format).mapV(_.size).toSeq.sortBy(_._2) }

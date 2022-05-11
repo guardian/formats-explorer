@@ -7,6 +7,8 @@ libraryDependencies ++= Seq(
   "com.gu" %% "content-api-client" % "18.0.0",
   "com.madgag" %% "scala-collection-plus" % "0.11",
   "com.typesafe.play" %% "play-json" % "2.9.2",
+  "com.google.guava" % "guava" % "31.1-jre",
+  "com.madgag" %% "rate-limit-status" % "0.7",
   "org.threeten" % "threeten-extra" % "1.7.0"
 )
 

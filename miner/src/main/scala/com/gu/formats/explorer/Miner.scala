@@ -42,7 +42,7 @@ object Format {
 }
 
 object Miner extends App {
-  val interval = Interval.of(Instant.parse("2022-05-09T00:00:00Z"), Instant.now().truncatedTo(MINUTES))
+  val interval = Interval.of(Instant.parse("2022-04-27T00:00:00Z"), Instant.now().truncatedTo(MINUTES))
 
   val search: SearchQuery =
     SearchQuery()
@@ -72,7 +72,7 @@ object Miner extends App {
     println(allContent.size)
     println(sorted.size)
     val allContentJson = Json.toJson(allContent)
-    val path = Paths.get(s"/Users/roberto/format-data.${interval.toString.replace('/', '_')}.json");
+    val path = Paths.get(s"/Users/olly_namey/format-data.${interval.toString.replace('/', '_')}.json");
     Files.write(path, Json.prettyPrint(allContentJson).getBytes())
     println(s"Wrote out to $path")
   }

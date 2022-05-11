@@ -95,7 +95,7 @@ export const NotUsed = ({ data }: { data: ArticleData[] }) => {
                                 return <td><a href={`#${articles[0].format.design}${articles[0].format.display}${articles[0].format.theme}`}><span className="badge rounded-pill bg-success">{articles.length}</span></a></td>
                             }
 
-                            else return <td><span className="badge rounded-pill bg-secondary">0</span></td>
+                            else return <td><span className='badge rounded-pill text-dark'>0</span></td>
                         })) 
                         rows.push(pillars.map((pillar) => {
                             if (typeof pillar === 'string') return ''
@@ -109,7 +109,7 @@ export const NotUsed = ({ data }: { data: ArticleData[] }) => {
                                 return <td><a href={`#${articles[0].format.design}${articles[0].format.display}${articles[0].format.theme}`}><span className="badge rounded-pill bg-success">{articles.length}</span></a></td>
                             }
 
-                            else return <td><span className="badge rounded-pill bg-secondary">0</span></td>
+                            else return <td><span className='badge rounded-pill text-dark'>0</span></td>
                         }))
                         return <tr><th scope="row">{ArticleDesign[design]}</th>{rows}</tr> 
                     })

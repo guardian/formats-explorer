@@ -39,7 +39,7 @@ export const MostPopular = ({ data }: { data: ArticleData[] }) => {
                 {
                   visible.includes(name) ? 
                     <div className='row mb-3'>
-                      {data.map(a => <div className='col-6'><li><a href={a.webUrl}>{a.webUrl}</a></li></div>)}
+                      {data.map(a => <div className='col-6'><li><a href={a.webUrl} target='_blank' rel="noreferrer">{a.webUrl}</a></li></div>)}
                     </div>
                   : ''
                 }

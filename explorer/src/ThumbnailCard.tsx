@@ -10,5 +10,5 @@ export const ThumbnailCard = ({ article }: { article: ArticleData }) => {
         return `https://playground-dist.s3.eu-west-1.amazonaws.com/formats-explorer/400/${filename}`
       }
 
-    return <div className='thumbnail-card'><a href={article.webUrl}><img src={getImageUrl(article.webUrl)} alt="xxx"/></a></div>
+    return <div className='thumbnail-card'><a target='_blank' rel="noreferrer" href={article.webUrl}><img src={getImageUrl(article.webUrl)} alt="xxx"/></a></div>
   }

@@ -43,15 +43,14 @@ async function captureScreenshots() {
     await page.setViewport({ width: 1440, height: 1440 });
 
     for (const url of firstTenExamplesPerFormat) {
-      // console.log(url)
-      // console.log("!!!!!!!!!!!!!")
-      // set cookie to remove ad banner space at top
-      const filename = `${encodeURIComponent(
-        url.length > 200 ? url.slice(url.length - 100) : url
-      )}.webp`;
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname;
+      const id = pathname.length > 200 ? pathname.slice(pathname.length - 100) : pathname
+      const filename = `${id.replaceAll("/", "-")}.webp`;
       console.log(filename);
+      
       if (!fs.existsSync(`screenshots/thumbnails/${thumbnailWidth}/${filename}`)) {
-        console.log(filename)
+        // set cookie to remove ad banner space at top
         await page.setCookie({
           name: "GU_AF1",
           value: "true",

@@ -1,6 +1,7 @@
 import { ArticleFormat, ArticleDesign, ArticleDisplay, ArticleTheme, ArticlePillar, ArticleSpecial } from './Formats'
 import { ArticleData } from './App'
 import { useState } from 'react';
+import { ThumbnailCard } from './ThumbnailCard';
 
 
 const getTheme = (theme: ArticleTheme, prefix?: boolean) => {
@@ -98,10 +99,18 @@ export const Search = ({ data }: { data: ArticleData[] }) => {
         article.format.theme === `${getTheme(format.theme, true)}`
       )
     })
+
+    const list = [...filtered]
+              .sort((a, b) => (a.webUrl > b.webUrl ? 1 : -1))
+              .slice(0, 8)
+
+    if (!list.length) {
+      return <div>No results found {':('}</div>
+    }
   
-    return <ul>
+    return <div className='row'>
       {
-        filtered.map((article: ArticleData) => <li><a href={article.webUrl}>{article.webUrl}</a></li>)
+        list.map((article: ArticleData) => <div className='col-3'><ThumbnailCard article={article} /></div>)
       }
-   </ul>
+   </div>
   }

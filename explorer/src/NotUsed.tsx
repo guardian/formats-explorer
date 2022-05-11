@@ -71,7 +71,7 @@ export const NotUsed = ({ data }: { data: ArticleData[] }) => {
             </select>
         </div>
         { display !== undefined ? <div>
-            <table className='table'>
+            <table className='table table-striped'>
                     <thead>
                     <tr>
                         <th scope="col"></th>
@@ -85,19 +85,31 @@ export const NotUsed = ({ data }: { data: ArticleData[] }) => {
                         const rows = []
                         rows.push(specials.map((special) => {
                             if (typeof special === 'string') return ''
-                            return <><td>{ data.find((a) => articleFormatCompare(a, {
+                            const articles = data.filter(a => articleFormatCompare(a, {
                                 design,
                                 display,
                                 theme: special
-                            })) ? '✅' : ' ' }</td></>
+                            }))
+
+                            if (articles[0]) {
+                                return <td><a href={`#${articles[0].format.design}${articles[0].format.display}${articles[0].format.theme}`}><span className="badge rounded-pill bg-success">{articles.length}</span></a></td>
+                            }
+
+                            else return <td><span className="badge rounded-pill bg-secondary">0</span></td>
                         })) 
                         rows.push(pillars.map((pillar) => {
                             if (typeof pillar === 'string') return ''
-                            return <><td>{ data.find((a) => articleFormatCompare(a, {
+                            const articles = data.filter(a => articleFormatCompare(a, {
                                 design,
                                 display,
                                 theme: pillar
-                            })) ? '✅' : ' ' }</td></>
+                            }))
+
+                            if (articles[0]) {
+                                return <td><a href={`#${articles[0].format.design}${articles[0].format.display}${articles[0].format.theme}`}><span className="badge rounded-pill bg-success">{articles.length}</span></a></td>
+                            }
+
+                            else return <td><span className="badge rounded-pill bg-secondary">0</span></td>
                         }))
                         return <tr><th scope="row">{ArticleDesign[design]}</th>{rows}</tr> 
                     })

@@ -1,11 +1,6 @@
-import { groupBy } from 'lodash'
 import { useState } from 'react'
 import { ArticleData } from './App'
 import { ArticleFormat, ArticleDesign, ArticleDisplay, ArticleTheme, ArticlePillar, ArticleSpecial } from './Formats'
-
-interface Array<T> {
-    concat<U>(...items: (U | ConcatArray<U>)[]): (T | U)[]
-}
 
 const getTheme = (theme: ArticleTheme, prefix?: boolean) => {
     if (theme.valueOf() === 5) return prefix ? `${ArticleSpecial[theme]}Theme` : ArticleSpecial[theme]
@@ -61,23 +56,30 @@ export const NotUsed = ({ data }: { data: ArticleData[] }) => {
     }
 
 
-    return <div>
-        <select id="display" name="display" onChange={displayChange}>
-        <option value="unset">Select</option>
-            {
-            Object.entries(ArticleDisplay).slice(5).map(([name, value]) => {
-                return <option value={value}>{name}</option>
-            })
-            }
-        </select>
+    return <div className='container mt-5'>
+        <div className='row'>
+        <h2>What's used?!</h2>
+        <div className='col-3'>
+            <label className='form-label'>Select Display: </label>
+            <select className='form-control' id="display" name="display" onChange={displayChange}>
+            <option value="unset">Select display ...</option>
+                {
+                Object.entries(ArticleDisplay).slice(5).map(([name, value]) => {
+                    return <option value={value}>{name}</option>
+                })
+                }
+            </select>
+        </div>
         { display !== undefined ? <div>
-            <table>
-                
+            <table className='table'>
+                    <thead>
                     <tr>
-                        <td></td>
-                        {specials.map(special => <td>{typeof special !== 'string'? ArticleSpecial[special]: ''}</td>)}
-                        {pillars.map(pillar => <td>{typeof pillar !== 'string'? ArticlePillar[pillar]: ''}</td>)}
+                        <th scope="col"></th>
+                        {specials.map(special => <th scope="col">{typeof special !== 'string'? ArticleSpecial[special]: ''}</th>)}
+                        {pillars.map(pillar => <th scope="col">{typeof pillar !== 'string'? ArticlePillar[pillar]: ''}</th>)}
                     </tr>
+                    </thead>
+                    <tbody>
                     {designs.map((design) => {
                         if (typeof design === 'string') return ''
                         const rows = []
@@ -97,30 +99,12 @@ export const NotUsed = ({ data }: { data: ArticleData[] }) => {
                                 theme: pillar
                             })) ? '✅' : ' ' }</td></>
                         }))
-                        return <tr><td>{ArticleDesign[design]}</td>{rows}</tr> 
+                        return <tr><th scope="row">{ArticleDesign[design]}</th>{rows}</tr> 
                     })
                 }
+                </tbody>
             </table>
         </div> : ''}
+        </div>
     </div>
-
-
-    // const grouped = groupBy(data, (a: ArticleData) => `${a.format.design}${a.format.display}${a.format.theme}`)
-  
-    // return <div>
-    //   { Object.entries(grouped).sort((a, b) => b[1].length - a[1].length).map((test) => {
-    //     const [name, data] = test;
-  
-    //     return (
-    //       <div>
-    //         <h2>{name} - {data.length}</h2>
-    //         <ul>
-    //           {
-    //             data.map((article: ArticleData) => <li><a href={article.webUrl}>{article.webUrl}</a></li>)
-    //           }
-    //          </ul>
-    //       </div>
-    //     )
-    //   })}
-    // </div>
   }

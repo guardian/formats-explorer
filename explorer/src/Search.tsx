@@ -37,45 +37,55 @@ export const Search = ({ data }: { data: ArticleData[] }) => {
       }
     }
   
-    return <div>
-      <label >Design ({design !== undefined ? ArticleDesign[design] : ''}): </label>
-      <select id="design" name="design" onChange={designChange}>
-        <option value="unset">Select</option>
+    return <div className="container mt-5">
+      <div className="row">
+      <h2>Search: </h2>
+      <div className="col-3">
+        <label className="form-label"> Select Design: </label>
+        <select className="form-control" id="design" name="design" onChange={designChange}>
+          <option value="unset">Design ...</option>
+          {
+            Object.entries(ArticleDesign).slice(22).map(([name, value]) => {
+              return <option value={value}>{name}</option>
+            })
+          }
+        </select>
+      </div>
+      <div className="col-3">
+        <label className="form-label" >Select Theme: </label>
+        <select className="form-control" id="theme" name="theme" onChange={themeChange}>
+        <option value="unset">Theme ...</option>
+          {
+            Object.entries(ArticlePillar).slice(5).map(([name, value]) => {
+              return <option value={value}>{name}</option>
+            })
+          }
+          {
+            Object.entries(ArticleSpecial).slice(2).map(([name, value]) => {
+              return <option value={value}>{name}</option>
+            })
+          }
+        </select>
+      </div>
+      <div className="col-4">
+      <label className='form-label'>Select Display: </label>
+      <select className='form-control' id="display" name="display" onChange={displayChange}>
+        <option value="unset">Display ...</option>
+          {
+            Object.entries(ArticleDisplay).slice(5).map(([name, value]) => {
+              return <option value={value}>{name}</option>
+            })
+          }
+        </select>
+      </div>
+      <div className='row'>
+        <div className='col-12 mt-3'>
         {
-          Object.entries(ArticleDesign).slice(22).map(([name, value]) => {
-            return <option value={value}>{name}</option>
-          })
+          (theme !== undefined && display !== undefined && design !== undefined) ? <Filtered data={data} format={{ design, display, theme }}/> : 'Result will appear here...'
         }
-      </select>
-      <label >Theme ({theme !== undefined ? getTheme(theme) : ''}): </label>
-  
-      <select id="theme" name="theme" onChange={themeChange}>
-      <option value="unset">Select</option>
-        {
-          Object.entries(ArticlePillar).slice(5).map(([name, value]) => {
-            return <option value={value}>{name}</option>
-          })
-        }
-        {
-          Object.entries(ArticleSpecial).slice(2).map(([name, value]) => {
-            return <option value={value}>{name}</option>
-          })
-        }
-      </select>
-      <label >Display ({display !== undefined ? ArticleDisplay[display] : ''}): </label>
-  
-      <select id="display" name="display" onChange={displayChange}>
-      <option value="unset">Select</option>
-        {
-          Object.entries(ArticleDisplay).slice(5).map(([name, value]) => {
-            return <option value={value}>{name}</option>
-          })
-        }
-      </select>
-  
-      {
-        (theme !== undefined && display !== undefined && design !== undefined) ? <Filtered data={data} format={{ design, display, theme }}/> : 'Result will appear here...'
-      }
+        </div>
+      </div>
+      </div>
     </div>
   
   }

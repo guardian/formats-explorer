@@ -3,6 +3,8 @@ import { Search } from './Search';
 import { MostPopular } from './MostPopular';
 import { NotUsed } from './NotUsed'
 
+import './main.css'
+
 export type ArticleData = typeof data[number];
 
 export const App = () => {

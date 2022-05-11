@@ -16,9 +16,9 @@ which collects and processes data from the Content API.
 which takes screenshots of the range of page formats and generates thumbnails from them.
 3. [explorer](https://github.com/guardian/formats-explorer/tree/main/explorer), a React app
 that allows users to:
-  - Preview examples of articles which use a given format.
-  - Find URLs for all saved articles of that format.
-  - Explore usage figures for each format -- which is used most often? Which aren't used at all?
+    - Preview examples of articles which use a given format.
+    - Find URLs for all saved articles of that format.
+    - Explore usage figures for each format -- which is used most often? Which aren't used at all?
 
 For the Hackday demo, we have populated the app with data from all of the articles available
 on CAPI from the last two weeks. Screenshots are available for up to 10 articles per format,

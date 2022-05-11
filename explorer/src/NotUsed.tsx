@@ -161,9 +161,9 @@ const Filtered = ({ format, data}: { format: ArticleFormat, data: ArticleData[] 
         return <div>No results found {':('}</div>
     }
 
-    return <div className='row'>
+    return <div>
         {
-            list.map((article: ArticleData) => <div className='col-3'><ThumbnailCard article={article} /></div>)
+            list.map((article: ArticleData) => <ThumbnailCard article={article} />)
         }
     </div>
 }

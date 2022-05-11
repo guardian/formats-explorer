@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ArticleData } from './App'
 import { ArticleFormat, ArticleDesign, ArticleDisplay, ArticleTheme, ArticlePillar, ArticleSpecial } from './Formats'
+import {ThumbnailCard} from "./ThumbnailCard";
 
 const getTheme = (theme: ArticleTheme, prefix?: boolean) => {
     if (theme.valueOf() === 5) return prefix ? `${ArticleSpecial[theme]}Theme` : ArticleSpecial[theme]
@@ -41,11 +42,18 @@ export const NotUsed = ({ data }: { data: ArticleData[] }) => {
     }
 
     const [display, setDisplay] = useState<ArticleDisplay>()
+    const [theme, setTheme] = useState<ArticleTheme>()
+    const [design, setDesign] = useState<ArticleDesign>()
 
     const displayChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         if (event.target.value === 'unset') setDisplay(undefined)
         else setDisplay(parseInt(event.target.value) as ArticleDisplay)
       }
+
+    const designAndThemeChange = (newDesign: ArticleDesign, newTheme: ArticleTheme) => () => {
+        setDesign(newDesign)
+        setTheme(newTheme)
+    }
 
     const articleFormatCompare = (article: ArticleData, format: ArticleFormat):boolean => {
         return (
@@ -70,7 +78,10 @@ export const NotUsed = ({ data }: { data: ArticleData[] }) => {
                 }
             </select>
         </div>
-        { display !== undefined ? <div>
+
+
+
+        { display !== undefined ? <div className='col-5'>
             <table className='table table-striped'>
                     <thead>
                     <tr>
@@ -91,8 +102,12 @@ export const NotUsed = ({ data }: { data: ArticleData[] }) => {
                                 theme: special
                             }))
 
-                            if (articles[0]) {
-                                return <td><a href={`#${articles[0].format.design}${articles[0].format.display}${articles[0].format.theme}`}><span className="badge rounded-pill bg-success">{articles.length}</span></a></td>
+                            let sampleArticle = articles[0];
+                            if (sampleArticle) {
+                                let newDesign = sampleArticle.format.design;
+                                let newTheme = sampleArticle.format.theme;
+                                return <td><a onClick={designAndThemeChange(design, special)}
+                                ><span className="badge rounded-pill bg-success">{articles.length}</span></a></td>
                             }
 
                             else return <td><span className='badge rounded-pill text-dark'>0</span></td>
@@ -106,7 +121,8 @@ export const NotUsed = ({ data }: { data: ArticleData[] }) => {
                             }))
 
                             if (articles[0]) {
-                                return <td><a href={`#${articles[0].format.design}${articles[0].format.display}${articles[0].format.theme}`}><span className="badge rounded-pill bg-success">{articles.length}</span></a></td>
+                                return <td><a onClick={designAndThemeChange(design, pillar)}
+                                ><span className="badge rounded-pill bg-success">{articles.length}</span></a></td>
                             }
 
                             else return <td><span className='badge rounded-pill text-dark'>0</span></td>
@@ -117,6 +133,43 @@ export const NotUsed = ({ data }: { data: ArticleData[] }) => {
                 </tbody>
             </table>
         </div> : ''}
+
+            <div className='col-4'>
+            {(display !== undefined && design !== undefined && theme !== undefined) ?
+                <Filtered data={data} format={{design, display, theme}}/> : ''
+            }
+            </div>
         </div>
     </div>
   }
+
+
+const Filtered = ({ format, data}: { format: ArticleFormat, data: ArticleData[] }) => {
+    const filtered = data.filter((article: ArticleData) => {
+        return (
+            article.format.design === `${getDesign(format.design)}Design` &&
+            article.format.display === `${ArticleDisplay[format.display]}Display` &&
+            article.format.theme === `${getTheme(format.theme, true)}`
+        )
+    })
+
+    const list = [...filtered]
+        .sort((a, b) => (a.webUrl > b.webUrl ? 1 : -1))
+        .slice(0, 8)
+
+    if (!list.length) {
+        return <div>No results found {':('}</div>
+    }
+
+    return <div>
+        {
+            list.map((article: ArticleData) => <ThumbnailCard article={article} />)
+        }
+    </div>
+}
+
+const getDesign = (design: ArticleDesign) => {
+    const value = ArticleDesign[design]
+    if (value === 'Standard') return 'Article'
+    else return value
+}

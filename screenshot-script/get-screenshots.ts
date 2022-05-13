@@ -11,10 +11,29 @@ type GroupedArticleData = {
   [key: string]: ArticleData[];
 };
 
-const OUTPUT_ROOT = process.env.SCREENSHOT_OUTPUT_ROOT || "screenshots";
+interface PageData {
+  url: string;
+  name?: string;
+}
+
+const OUTPUT_ROOT = process.env.SCREENSHOT_OUTPUT_ROOT || "test-screenshots";
 const THUMBNAIL_WIDTH = parseInt(
   process.env.SCREENSHOT_THUMBNAIL_WIDTH || "400"
 );
+
+const truncateUrl = (
+  url: string,
+  maxLength: number,
+  pathOnly = true
+): string => {
+  const segmentToTruncate = pathOnly ? new URL(url).pathname : url;
+  return segmentToTruncate.slice(0 - maxLength);
+};
+
+const urls = [
+  { url: "https://www.google.com/" },
+  { url: "https://www.theguardian.com" },
+];
 
 const groupedExamples: GroupedArticleData = groupBy(
   rawData,
@@ -30,9 +49,10 @@ const firstTenExamplesPerFormat = Object.values(groupedExamples)
   )
   .flat();
 
-async function captureScreenshots() {
+async function captureScreenshots(pageData: PageData[]) {
   // make sure output dirs exist
   if (!fs.existsSync(`${OUTPUT_ROOT}/thumbnails/${THUMBNAIL_WIDTH}`)) {
+    console.log("making dir...");
     fs.mkdirSync(`${OUTPUT_ROOT}/thumbnails/${THUMBNAIL_WIDTH}`, {
       recursive: true,
     });
@@ -49,13 +69,8 @@ async function captureScreenshots() {
 
     await page.setViewport({ width: 1440, height: 1440 });
 
-    for (const url of firstTenExamplesPerFormat) {
-      const urlObj = new URL(url);
-      const pathname = urlObj.pathname;
-      const id =
-        pathname.length > 200
-          ? pathname.slice(pathname.length - 100)
-          : pathname;
+    for (const url of pageData) {
+      const id = truncateUrl(url.url, 200, false);
       const filename = `${id.replaceAll("/", "-")}.webp`;
       console.log(filename);
 
@@ -74,7 +89,7 @@ async function captureScreenshots() {
           secure: true,
         });
 
-        await page.goto(url);
+        await page.goto(url.url);
         await page.screenshot({
           path: `${OUTPUT_ROOT}/${filename}`,
           type: "webp",
@@ -96,4 +111,4 @@ async function captureScreenshots() {
   }
 }
 
-captureScreenshots();
+captureScreenshots(urls);

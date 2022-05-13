@@ -5,6 +5,9 @@ const { groupBy } = require("lodash");
 
 const rawData = require("../explorer/src/format-data.2022-04-27T00:00:00Z_2022-05-11T09:12:00Z.json");
 
+const OUTPUT_ROOT = process.env.SCREENSHOT_OUTPUT_ROOT || "screenshots";
+const THUMBNAIL_WIDTH = process.env.SCREENSHOT_THUMBNAIL_WIDTH || 400;
+
 const groupedExamples = groupBy(
   rawData,
   (a) => `${a.format.design}${a.format.display}${a.format.theme}`
@@ -19,21 +22,17 @@ const firstTenExamplesPerFormat = Object.entries(groupedExamples)
   )
   .flat();
 
-const thumbnailWidth = 400;
-
 async function captureScreenshots() {
   // make sure output dirs exist
-  if (!fs.existsSync("screenshots")) {
-    fs.mkdirSync("screenshots");
-  }
-  if (!fs.existsSync("screenshots/thumbnails")) {
-    fs.mkdirSync("screenshots/thumbnails");
-  }
-  if (!fs.existsSync(`screenshots/thumbnails/${thumbnailWidth}`)) {
-    fs.mkdirSync(`screenshots/thumbnails/${thumbnailWidth}`);
+  if (!fs.existsSync(`${OUTPUT_ROOT}/thumbnails/${THUMBNAIL_WIDTH}`)) {
+    fs.mkdirSync(`${OUTPUT_ROOT}/thumbnails/${THUMBNAIL_WIDTH}`, {
+      recursive: true,
+    });
   }
 
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    headless: true,
+  });
 
   try {
     const page = await browser.newPage();
@@ -45,11 +44,16 @@ async function captureScreenshots() {
     for (const url of firstTenExamplesPerFormat) {
       const urlObj = new URL(url);
       const pathname = urlObj.pathname;
-      const id = pathname.length > 200 ? pathname.slice(pathname.length - 100) : pathname
+      const id =
+        pathname.length > 200
+          ? pathname.slice(pathname.length - 100)
+          : pathname;
       const filename = `${id.replaceAll("/", "-")}.webp`;
       console.log(filename);
-      
-      if (!fs.existsSync(`screenshots/thumbnails/${thumbnailWidth}/${filename}`)) {
+
+      if (
+        !fs.existsSync(`${OUTPUT_ROOT}/thumbnails/${THUMBNAIL_WIDTH}/${filename}`)
+      ) {
         // set cookie to remove ad banner space at top
         await page.setCookie({
           name: "GU_AF1",
@@ -62,15 +66,15 @@ async function captureScreenshots() {
 
         await page.goto(url);
         await page.screenshot({
-          path: `screenshots/${filename}`,
+          path: `${OUTPUT_ROOT}/${filename}`,
           type: "webp",
           quality: 1,
         });
 
         // resizing images locally
-        sharp(`screenshots/${filename}`)
-          .resize({ width: thumbnailWidth })
-          .toFile(`screenshots/thumbnails/${thumbnailWidth}/${filename}`);
+        sharp(`${OUTPUT_ROOT}/${filename}`)
+          .resize({ width: THUMBNAIL_WIDTH })
+          .toFile(`${OUTPUT_ROOT}/thumbnails/${THUMBNAIL_WIDTH}/${filename}`);
       }
     }
   } catch (err) {

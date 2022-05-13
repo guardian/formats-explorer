@@ -9,10 +9,12 @@ type ArticleData = typeof rawData[number];
 
 type GroupedArticleData = {
   [key: string]: ArticleData[];
-}
+};
 
 const OUTPUT_ROOT = process.env.SCREENSHOT_OUTPUT_ROOT || "screenshots";
-const THUMBNAIL_WIDTH = parseInt(process.env.SCREENSHOT_THUMBNAIL_WIDTH || "400");
+const THUMBNAIL_WIDTH = parseInt(
+  process.env.SCREENSHOT_THUMBNAIL_WIDTH || "400"
+);
 
 const groupedExamples: GroupedArticleData = groupBy(
   rawData,
@@ -58,7 +60,9 @@ async function captureScreenshots() {
       console.log(filename);
 
       if (
-        !fs.existsSync(`${OUTPUT_ROOT}/thumbnails/${THUMBNAIL_WIDTH}/${filename}`)
+        !fs.existsSync(
+          `${OUTPUT_ROOT}/thumbnails/${THUMBNAIL_WIDTH}/${filename}`
+        )
       ) {
         // set cookie to remove ad banner space at top
         await page.setCookie({
@@ -83,7 +87,8 @@ async function captureScreenshots() {
           .toFile(`${OUTPUT_ROOT}/thumbnails/${THUMBNAIL_WIDTH}/${filename}`);
       }
     }
-  } catch (err: any) {  // TODO !
+  } catch (err: any) {
+    // TODO !
     console.log(`Error: ${err.message}`);
   } finally {
     await browser.close();

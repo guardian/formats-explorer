@@ -1,0 +1,4 @@
+- Batched async, 5 pools, 40 articles: <= 7.072s
+- Batched async, 5 pools, 40 articles, new browser instance for each thread: 14.451s
+  - nb. also creates potential memory leak issues because of the number of instances.
+- Blocking, 40 articles: 25.175s 

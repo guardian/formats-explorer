@@ -1,18 +1,17 @@
 import fs from "fs";
 import path from "path";
 
-import cliProgress from "cli-progress";
 import { chunk, zip } from "lodash";
 import sharp from "sharp";
 
 import {
   createBrowser,
-  ScreenshotOptions,
   screenshotPathFactory,
   screenshotSettingsFactory,
   snap,
 } from "./utils/screenshots";
 import { firstTenExamplesPerFormat } from "./utils/process-data";
+import { initialiseProgressBars } from "./utils/progress-bar";
 
 const OUTPUT_ROOT =
   process.env.SCREENSHOT_OUTPUT_ROOT || "async-test-screenshots";
@@ -25,35 +24,10 @@ const urls = firstTenExamplesPerFormat
   .slice(500, 550)
   .map((url) => ({ url: url }));
 
-// --- progress bars setup start
-const progressBars = new cliProgress.MultiBar(
-  {
-    clearOnComplete: false,
-    hideCursor: true,
-  },
-  cliProgress.Presets.shades_grey
-);
-const screenshotBar = progressBars.create(
-  urls.length,
-  0,
-  {},
-  {
-    format:
-      "taking screenshots [{bar}] {percentage}% | ETA: {eta}s | {value}/{total}",
-  }
-);
-const thumbnailBar = progressBars.create(
-  urls.length,
-  0,
-  {},
-  {
-    format:
-      "taking screenshots [{bar}] {percentage}% | ETA: {eta}s | {value}/{total}",
-  }
-);
-// progress bars setup end ---
-
+// main function
 async function run(): Promise<string[][]> {
+  console.log("initialising..");
+
   // config
   const outputDir = `${OUTPUT_ROOT}/screenshots`;
   const fileType = "webp";
@@ -85,6 +59,10 @@ async function run(): Promise<string[][]> {
   );
 
   // take screenshots
+  console.log("starting..");
+  const { progressBars, screenshotBar, thumbnailBar } = initialiseProgressBars(
+    urls.length
+  );
   const outputPaths = await Promise.all(
     batches.map(async ({ urlBatch, browserInstance }) => {
       // TODO how to narrow types earlier in the process? (Presumably in the

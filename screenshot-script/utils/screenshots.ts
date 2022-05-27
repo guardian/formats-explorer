@@ -17,11 +17,17 @@ export function truncateUrl(
   return segmentToTruncate.slice(0 - maxLength);
 }
 
+export function screenshotPathFactory(dir: string, fileType: string) {
+  return (url: string) =>
+    `${dir}/${truncateUrl(url, 100).replaceAll(/[/:.]/g, "-")}.${fileType}`;
+}
+
 export const screenshotSettingsFactory = (
   defaults: puppeteer.ScreenshotOptions = {}
 ) => {
   // given current usage it seems to make sense to pass a path
   // for every specific initialisation?
+  // (although being realistic this is an unnecessary abstraction..)
   return (overrides: ScreenshotOptions): ScreenshotOptions => ({
     ...defaults,
     ...overrides,
@@ -29,7 +35,7 @@ export const screenshotSettingsFactory = (
 };
 
 export async function createBrowser() {
-  console.log("creating browser instance");
+  // console.log("creating browser instance");
   const browserInstance = await puppeteer.launch({
     headless: true,
   });
@@ -37,13 +43,13 @@ export async function createBrowser() {
 }
 
 export async function snap(
-  url: PageData,
+  url: string,
   screenshotOptions: ScreenshotOptions,
   browserInstance: null | puppeteer.Browser = null
 ) {
   const browser = browserInstance ?? (await createBrowser());
 
-  console.log(`opening page for ${url.url}`);
+  // console.log(`opening page for ${url.url}`);
   const page = await browser.newPage();
   page.setJavaScriptEnabled(false);
   await page.setViewport({ width: 1440, height: 1440 });
@@ -58,15 +64,10 @@ export async function snap(
     secure: true,
   });
 
-  console.log(`going to url for ${url.url}`);
-  await page.goto(url.url);
+  // console.log(`going to url for ${url.url}`);
+  await page.goto(url);
 
-  console.log(`saving screenshot for ${url.url}`);
+  // console.log(`saving screenshot for ${url.url}`);
   await page.screenshot(screenshotOptions);
   return screenshotOptions.path;
-}
-
-export function screenshotPathFactory(dir: string, fileType: string) {
-  return (url: string) =>
-    `${dir}/${truncateUrl(url, 100).replaceAll(/[/:.]/g, "-")}.${fileType}`;
 }

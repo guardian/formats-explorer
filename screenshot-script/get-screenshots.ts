@@ -5,7 +5,7 @@ import sharp from "sharp";
 
 import { PageData, truncateUrl } from "./utils/screenshots";
 import { firstTenExamplesPerFormat } from "./utils/process-data";
-
+import { initialiseProgressBars } from "./utils/progress-bar";
 
 const OUTPUT_ROOT =
   process.env.SCREENSHOT_OUTPUT_ROOT || "sync-test-screenshots";
@@ -14,22 +14,12 @@ const THUMBNAIL_WIDTH = parseInt(
 );
 
 const urls = firstTenExamplesPerFormat
-  .slice(200, 300)
+  .slice(500, 510)
   .map((url) => ({ url: url }));
 
-
-// progress bars setup start
-const progressBars = new cliProgress.MultiBar(
-  {
-    clearOnComplete: false,
-    hideCursor: true,
-  },
-  cliProgress.Presets.shades_grey
+const { progressBars, screenshotBar, thumbnailBar } = initialiseProgressBars(
+  urls.length
 );
-const screenshotBar = progressBars.create(urls.length, 0, {format: 'yolo [{bar}] {percentage}% | ETA: {eta}s | {value}/{total}'});
-const thumbnailBar = progressBars.create(urls.length, 0, {format: 'okay [{bar}] {percentage}% | ETA: {eta}s | {value}/{total}'});
-// progress bars setup end
-
 
 async function captureScreenshots(pageData: PageData[]) {
   console.log("Capturing screenshots...");
@@ -53,10 +43,8 @@ async function captureScreenshots(pageData: PageData[]) {
     await page.setViewport({ width: 1440, height: 1440 });
 
     for (const url of pageData) {
-      // console.log(`starting for ${url.url}`);
       const id = truncateUrl(url.url, 200, false);
       const filename = `${id.replaceAll("/", "-")}.webp`;
-      // console.log(filename);
 
       if (
         !fs.existsSync(
@@ -74,7 +62,6 @@ async function captureScreenshots(pageData: PageData[]) {
         });
 
         await page.goto(url.url);
-        // console.log(`taking screenshot for ${url.url}`);
         await page.screenshot({
           path: `${OUTPUT_ROOT}/${filename}`,
           type: "webp",

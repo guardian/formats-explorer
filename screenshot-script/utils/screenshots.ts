@@ -49,7 +49,6 @@ export async function snap(
 ) {
   const browser = browserInstance ?? (await createBrowser());
 
-  // console.log(`opening page for ${url.url}`);
   const page = await browser.newPage();
   page.setJavaScriptEnabled(false);
   await page.setViewport({ width: 1440, height: 1440 });
@@ -64,10 +63,13 @@ export async function snap(
     secure: true,
   });
 
-  // console.log(`going to url for ${url.url}`);
   await page.goto(url);
 
-  // console.log(`saving screenshot for ${url.url}`);
+  await page.evaluate(() => {
+    const imageEl = document.querySelector('img[src^="https://sb.scorecardresearch.com"]');
+    imageEl && imageEl.remove()
+  })
+
   await page.screenshot(screenshotOptions);
   return screenshotOptions.path;
 }

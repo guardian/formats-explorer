@@ -15,7 +15,7 @@ export function initialiseProgressBars(barLength: number) {
       {},
       {
         format:
-          "taking screenshots [{bar}] {percentage}% | ETA: {eta}s | {value}/{total}",
+          "taking screenshots [{bar}] {percentage}% | {value}/{total}",
       }
     );
     const thumbnailBar = progressBars.create(
@@ -24,7 +24,7 @@ export function initialiseProgressBars(barLength: number) {
       {},
       {
         format:
-          "taking screenshots [{bar}] {percentage}% | ETA: {eta}s | {value}/{total}",
+          "resizing screenshots [{bar}] {percentage}% | {value}/{total}",
       }
     );
     return { progressBars, screenshotBar, thumbnailBar };

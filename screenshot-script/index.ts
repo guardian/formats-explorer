@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-import { chunk, zip } from "lodash";
+import { chunk } from "lodash";
 import sharp from "sharp";
 
 import {
@@ -21,7 +21,7 @@ const THUMBNAIL_WIDTH = parseInt(
 const MAX_POOL_COUNT = parseInt(process.env.PUPPETEER_POOL_COUNT || "5");
 
 const urls = firstTenExamplesPerFormat
-  .slice(500, 550)
+  .slice(100, 110)
   .map((url) => ({ url: url }));
 
 // main function
@@ -49,6 +49,8 @@ async function run(): Promise<string[][]> {
   const batchLength = Math.ceil(urls.length / MAX_POOL_COUNT);
   if (batchLength == 0) throw new Error("URL array is empty");
   const urlBatches = chunk(urls, batchLength);
+  console.log("batch length:", batchLength);
+  console.log("batches:", urlBatches.length);
   // (sometimes urlBatches.length < MAX_POOL_COUNT; using a map here means that
   // we only get as many browser instances as we need.)
   const batches = await Promise.all(

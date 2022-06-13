@@ -67,11 +67,7 @@ async function run(): Promise<string[][]> {
   );
   const outputPaths = await Promise.all(
     batches.map(async ({ urlBatch, browserInstance }) => {
-      // TODO how to narrow types earlier in the process? (Presumably in the
-      // initial construction of the pool/batches, above?)
       if (urlBatch.length === 0) return ["empty array"];
-      // Using Promise.all() because we're inside a map(), but
-      // are there any good alternatives here?
       const resultPromises: Promise<string>[] = urlBatch.map(async (url) => {
         const screenshotFilepath = await snap(
           url.url,

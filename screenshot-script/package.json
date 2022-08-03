@@ -4,13 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "run": "npx ts-node index.ts",
+    "run-sync": "npx ts-node get-screenshots.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/cli-progress": "^3.11.0",
+    "cli-progress": "^3.11.1",
     "lodash": "^4.17.21",
     "puppeteer": "^14.0.0",
     "sharp": "^0.30.4"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.182",
+    "@types/sharp": "^0.30.2"
   }
 }
